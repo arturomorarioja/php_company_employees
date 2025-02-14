@@ -1,0 +1,35 @@
+:root {
+    --colorMain: black;
+    --colorError: red;
+}
+
+article {
+    border: thin solid var(--colorMain);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+
+    &:first-of-type {
+        margin-top: 1rem;
+    }
+
+    p {
+        margin: 0;
+    }
+}
+
+#searchForm {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.error {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: thick solid var(--colorError);
+    border-radius: 1rem;
+
+    p {
+        margin: 0;
+    }
+}
