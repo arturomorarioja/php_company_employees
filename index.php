@@ -52,6 +52,7 @@ include 'public/header.php';
                         <nav>
                             <ul>
                                 <li><a href="view.php?id=<?=$employee['nEmployeeID'] ?>">Show details</a></li>
+                                <li><a href="edit.php?id=<?=$employee['nEmployeeID'] ?>">Edit employee</a></li>
                                 <li><a href="delete.php?id=<?=$employee['nEmployeeID'] ?>">Delete employee</a></li>
                             </ul>
                         </nav>

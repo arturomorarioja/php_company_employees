@@ -147,7 +147,6 @@ function insertEmployee (
     int $departmentID
 ): bool
 {
-echo '<pre>';
     $sql =<<<SQL
         INSERT INTO employee
             (cFirstName, cLastName, cEmail, dBirth, nDepartmentID)
@@ -161,6 +160,54 @@ echo '<pre>';
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':birthDate', $birthDate);
         $stmt->bindValue(':departmentID', $departmentID);
+        $stmt->execute();
+
+        return $stmt->rowCount() === 1;
+    } catch (Exception) {
+        return false;
+    }
+}
+
+/**
+ * Updates an employee in the database
+ * @param $pdo A PDO database connection
+ * @param $employeeID The employee's ID
+ * @param $firstName The employee's first name
+ * @param $lastName The employee's last name
+ * @param $email The employee's email address
+ * @param $birthDate The employee's birth date
+ * @param $departmentID The employee's department ID
+ * @return true if the edition was successful,
+ *         or false if there was an error
+ */
+function updateEmployee (
+    PDO $pdo,
+    int $employeeID, 
+    string $firstName, 
+    string $lastName, 
+    string $email, 
+    string $birthDate,
+    int $departmentID
+): bool
+{
+    $sql =<<<SQL
+        UPDATE employee
+        SET
+            cFirstName = :firstName, 
+            cLastName = :lastName, 
+            cEmail = :email, 
+            dBirth = :birthDate, 
+            nDepartmentID = :departmentID
+        WHERE nEmployeeID = :employeeID;
+    SQL;
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':firstName', $firstName);
+        $stmt->bindValue(':lastName', $lastName);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':birthDate', $birthDate);
+        $stmt->bindValue(':departmentID', $departmentID);
+        $stmt->bindValue(':employeeID', $employeeID);
         $stmt->execute();
 
         return $stmt->rowCount() === 1;
