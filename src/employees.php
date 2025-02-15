@@ -168,3 +168,28 @@ echo '<pre>';
         return false;
     }
 }
+
+/**
+ * Deletes an employee in the database
+ * @param $pdo A PDO database connection
+ * @param $employeeID The ID of the employee to delete
+ * @return true if the deletion was successful,
+ *         or false if there was an error
+ */
+function deleteEmployee(PDO $pdo, int $employeeID): bool
+{
+    $sql =<<<SQL
+        DELETE FROM employee
+        WHERE nEmployeeID = :employeeID;
+    SQL;
+    try {
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':employeeID', $employeeID);
+        $stmt->execute();
+
+        return $stmt->rowCount() === 1;
+    } catch (Exception) {
+        return false;
+    }
+}
