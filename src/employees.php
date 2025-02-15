@@ -9,7 +9,7 @@
 function getAllEmployees(PDO $pdo): array|false
 {
     $sql =<<<SQL
-        SELECT cFirstName, cLastName, dBirth
+        SELECT nEmployeeID, cFirstName, cLastName, dBirth
         FROM employee
         ORDER BY cFirstName, cLastName;
     SQL;
@@ -18,6 +18,34 @@ function getAllEmployees(PDO $pdo): array|false
         $stmt->execute();
         
         return $stmt->fetchAll();
+    } catch (Exception) {
+        return false;
+    }
+}
+
+/**
+ * Retrieves an employee's information from the database
+ * @param $pdo A PDO database connection
+ * @param $employeeID The ID of the employee to retrieve
+ * @return An array with employee information,
+ *         or false if there was an error
+ */
+function getEmployeeByID(PDO $pdo, int $employeeID): array|false
+{
+    $sql =<<<SQL
+        SELECT 
+            employee.cFirstName, employee.cLastName, employee.cEmail, 
+            employee.dBirth, employee.nDepartmentID, department.cName
+        FROM employee INNER JOIN department
+            ON employee.nDepartmentID = department.nDepartmentID
+        WHERE employee.nEmployeeID = :employeeID;
+    SQL;
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':employeeID', $employeeID);
+        $stmt->execute();
+
+        return $stmt->fetch();
     } catch (Exception) {
         return false;
     }

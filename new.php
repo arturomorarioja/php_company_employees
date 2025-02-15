@@ -27,6 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ?>
     <main>
+        <nav class="nav">
+            <ul>
+                <li><a href="index.php" title="Homepage">Back</a></li>
+            </ul>
+        </nav>
         <?php if (isset($errorMessage)): ?>
             <p class="error"><?=$errorMessage ?></p>
         <?php else: ?>

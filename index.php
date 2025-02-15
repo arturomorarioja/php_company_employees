@@ -33,18 +33,27 @@ include 'public/header.php';
                 <button type="submit">Search</button>
             </div>            
         </form>
-        <form action="new.php" method="GET">              
-            <button type="submit">Add employee</button>
-        </form>
+        <nav>
+            <ul>
+                <li><a href="new.php">Add employee</a></li>
+            </ul>
+        </nav>
         <section>
             <?php if ($errorMessage): ?>
                 <p><?=$errorMessage ?></p>
             <?php else: ?>
                 <?php foreach ($employees as $employee): ?>
-                    <article>
-                        <p><strong>First name: </strong><?=$employee['cFirstName'] ?></p>
-                        <p><strong>Last name: </strong><?=$employee['cLastName'] ?></p>
-                        <p><strong>Birth date: </strong><?=$employee['dBirth'] ?></p>
+                    <article data-id="<?=$employee['nEmployeeID'] ?>">
+                        <section>
+                            <p><strong>First name: </strong><?=$employee['cFirstName'] ?></p>
+                            <p><strong>Last name: </strong><?=$employee['cLastName'] ?></p>
+                            <p><strong>Birth date: </strong><?=$employee['dBirth'] ?></p>
+                        </section>
+                        <nav>
+                            <ul>
+                                <li><a href="view.php?id=<?=$employee['nEmployeeID'] ?>">Show details</a></li>
+                            </ul>
+                        </nav>
                     </article>
                 <?php endforeach; ?>
             <?php endif; ?>

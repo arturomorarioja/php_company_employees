@@ -3,7 +3,22 @@
     --colorError: red;
 }
 
+nav {
+    ul {
+        padding: 0;
+        li {
+            list-style-type: none;
+        }
+    }
+}
+
 article {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+
     border: thin solid var(--colorMain);
     margin-bottom: 1rem;
     padding: 1rem;
