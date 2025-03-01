@@ -1,22 +1,21 @@
 <?php
 
-require_once 'src/database.php';
-require_once 'src/employees.php';
+require_once 'classes/Employee.php';
 
 $errorMessage = '';
 
-$pdo = connect();
-if (!$pdo) {
+$employee = new Employee();
+if ($employee->connexionError) {
     $errorMessage = 'There was an error while connecting to the database.';
 } else {
+    
     $employeeID = (int) ($_GET['id'] ?? 0);
-
     if ($employeeID === 0) {
         header('Location: index.php');
         exit;
     }
 
-    $employee = getEmployeeByID($pdo, $employeeID);
+    $employee = $employee->getByID($employeeID);
     if (!$employee) {
         $errorMessage = 'There was an error while retrieving employee information';
     }
@@ -35,13 +34,16 @@ include 'public/header.php';
     <main>
         <section>
             <?php if ($errorMessage): ?>
-                    <p><?=$errorMessage ?></p>
+                <p><?=$errorMessage ?></p>
             <?php else: ?>
-                <p><strong>First name: </strong><?=$employee['cFirstName'] ?></p>
-                <p><strong>Last name: </strong><?=$employee['cLastName'] ?></p>
-                <p><strong>Email address: </strong><?=$employee['cEmail'] ?></p>
-                <p><strong>Birth date: </strong><?=$employee['dBirth'] ?></p>
-                <p><strong>Department: </strong><?=$employee['cName'] ?></p>
+                <?php
+                    $email = htmlspecialchars($employee['email']);
+                ?>
+                <p><strong>First name: </strong><?=htmlspecialchars($employee['first_name']) ?></p>
+                <p><strong>Last name: </strong><?=htmlspecialchars($employee['last_name']) ?></p>
+                <p><strong>Email address: </strong><a href="mailto:<?=$email ?>"><?=$email ?></a></p>
+                <p><strong>Birth date: </strong><?=htmlspecialchars($employee['birth_date']) ?></p>
+                <p><strong>Department: </strong><?=htmlspecialchars($employee['department_name']) ?></p>
             <?php endif; ?>
         </section>
     </main>

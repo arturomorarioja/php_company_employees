@@ -1,48 +1,46 @@
 <?php
 
-require_once 'src/database.php';
-require_once 'src/employees.php';
 
 $errorMessage = '';
 
-$pdo = connect();
-if (!$pdo) {
+require_once 'classes/Department.php';
+$department = new Department();
+
+if ($department->connexionError) {
     $errorMessage = 'There was an error while connecting to the database.';
-} else {
-    $employeeID = (int) ($_GET['id'] ?? 0);
-
-    if ($employeeID === 0) {
-        header('Location: index.php');
-        exit;
-    }
-
-    $employee = getEmployeeByID($pdo, $employeeID);
-    if (!$employee) {
-        $errorMessage = 'There was an error while retrieving employee information';
+} else {   
+    require_once 'classes/Employee.php';
+    $employee = new Employee();
+    
+    if ($employee->connexionError) {
+        $errorMessage = 'There was an error while connecting to the database.';
     } else {
-        $firstName = $employee['cFirstName'];
-        $lastName = $employee['cLastName'];
-        $email = $employee['cEmail'];
-        $birthDate = $employee['dBirth'];
-        $departmentID = $employee['nDepartmentID'];
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once 'src/database.php';
-            require_once 'src/employees.php';
+        $employeeID = (int) ($_GET['id'] ?? 0);
+        
+        if ($employeeID === 0) {
+            header('Location: index.php');
+            exit;
+        }
+        
+        $employeeToUpdate = $employee->getByID($employeeID);
+        if (!$employee) {
+            $errorMessage = 'There was an error while retrieving employee information';
+        } else {
+            $firstName = $employeeToUpdate['first_name'];
+            $lastName = $employeeToUpdate['last_name'];
+            $email = $employeeToUpdate['email'];
+            $birthDate = $employeeToUpdate['birth_date'];
+            $departmentID = $employeeToUpdate['department_id'];
             
-            $validationErrors = employeeValidationErrors($pdo, $_POST);
-        
-            $firstName = trim($_POST['first_name'] ?? '');
-            $lastName = trim($_POST['last_name'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $birthDate = $_POST['birth_date'] ?? '';
-            $departmentID = (float)($_POST['department'] ?? 0);
-        
-            if (!$validationErrors) {
-                if (!updateEmployee($pdo, $employeeID, $firstName, $lastName, $email, $birthDate, $departmentID)) {
-                    $errorMessage = 'It was not possible to add the new employee.';
-                } else {
-                    header('Location: index.php');
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {               
+                $validationErrors = $employee->validate($_POST);
+                
+                if (!$validationErrors) {
+                    if (!$employee->update($employeeID, $_POST)) {
+                        $errorMessage = 'It was not possible to add the new employee.';
+                    } else {
+                        header('Location: index.php');
+                    }
                 }
             }
         }
@@ -92,13 +90,7 @@ include 'public/header.php';
                 </div>
                 <div>
                     <?php
-                        require_once 'src/database.php';
-                        require_once 'src/department.php';
-
-                        if (!isset($pdo)) {
-                            $pdo = connect();
-                        }
-                        $departments = getAllDepartments($pdo);
+                        $departments = $department->getAll();
 
                         if (!$departments):
                             echo '<p class="error">It was not possible to display the list of departments.</p>';

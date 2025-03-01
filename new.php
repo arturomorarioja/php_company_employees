@@ -3,24 +3,27 @@
 $pageTitle = 'Add Employee';
 include 'public/header.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once 'src/database.php';
-    require_once 'src/employees.php';
+require_once 'classes/Department.php';
+$department = new Department();
 
-    $pdo = connect();
-    $validationErrors = employeeValidationErrors($pdo, $_POST);
-
-    $firstName = trim($_POST['first_name'] ?? '');
-    $lastName = trim($_POST['last_name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $birthDate = $_POST['birth_date'] ?? '';
-    $departmentID = (float)($_POST['department'] ?? 0);
-
-    if (!$validationErrors) {
-        if (!insertEmployee($pdo, $firstName, $lastName, $email, $birthDate, $departmentID)) {
-            $errorMessage = 'It was not possible to add the new employee.';
+if ($department->connexionError) {
+    $errorMessage = 'There was an error while connecting to the database.';
+} else {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once 'classes/Employee.php';
+        
+        $employee = new Employee();
+        if ($employee->connexionError) {
+            $errorMessage = 'There was an error while connecting to the database.';
         } else {
-            header('Location: index.php');
+            $validationErrors = $employee->validate($_POST);    
+            if (!$validationErrors) {
+                if (!$employee->insert($_POST)) {
+                    $errorMessage = 'It was not possible to add the new employee.';
+                } else {
+                    header('Location: index.php');
+                }
+            }
         }
     }
 }
@@ -46,43 +49,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div>
                     <label for="txtFirstName">First name</label>
                     <input type="text" id="txtFirstName" name="first_name"
-                        value="<?=$firstName ?? '' ?>">
+                        value="<?=$_POST['first_name'] ?? '' ?>">
                 </div>
                 <div>
                     <label for="txtLastName">Last name</label>
                     <input type="text" id="txtLastName" name="last_name"
-                        value="<?=$lastName ?? '' ?>">
+                        value="<?=$_POST['last_name'] ?? '' ?>">
                 </div>
                 <div>
                     <label for="txtEmail">Email</label>
                     <input type="email" id="txtEmail" name="email"
-                        value="<?=$email ?? '' ?>">
+                        value="<?=$_POST['email'] ?? '' ?>">
                 </div>
                 <div>
                     <label for="txtBirthDate">Birth date</label>
                     <input type="date" id="txtBirthDate" name="birth_date"
-                        value="<?=$birthDate ?? null ?>">
+                        value="<?=$_POST['birth_date'] ?? null ?>">
                 </div>
                 <div>
                     <?php
-                        require_once 'src/database.php';
-                        require_once 'src/department.php';
+                        require_once 'classes/department.php';
 
-                        if (!isset($pdo)) {
-                            $pdo = connect();
-                        }
-                        $departments = getAllDepartments($pdo);
-
+                        $departments = $department->getAll();
                         if (!$departments):
-                            echo '<p class="error">It was not possible to display the list of departments.</p>';
-                        else:
                     ?>
+                            <p class="error">It was not possible to display the list of departments.</p>
+                    <?php else: ?>
                             <label for="cmbDepartment">Department</label>
                             <select id="cmbDepartment" name="department">
                                 <?php foreach ($departments as $department): ?>
                                     <option 
                                         value="<?=$department['nDepartmentID'] ?>" 
-                                        <?=($department['nDepartmentID'] == ($departmentID ?? 0) ? 'selected': '') ?>>
+                                        <?=($department['nDepartmentID'] == ($_POST['department'] ?? 0) ? 'selected': '') ?>>
                                             <?=$department['cName'] ?>
                                     </option>
                                 <?php endforeach; ?>

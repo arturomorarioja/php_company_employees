@@ -1,20 +1,19 @@
 <?php
 
-require_once 'src/database.php';
-require_once 'src/employees.php';
+require_once 'classes/Employee.php';
 
 $errorMessage = '';
 
-$pdo = connect();
-if (!$pdo) {
+$employee = new Employee();
+if ($employee->connexionError) {
     $errorMessage = 'There was an error while connecting to the database.';
 } else {
     $searchText = trim($_GET['search'] ?? '');
 
     if ($searchText === '') {
-        $employees = getAllEmployees($pdo);
+        $employees = $employee->getAll();
     } else {
-        $employees = searchEmployees($pdo, $searchText);
+        $employees = $employee->search($searchText);
     }
     if (!$employees) {
         $errorMessage = 'There was an error while retrieving the list of employees';
