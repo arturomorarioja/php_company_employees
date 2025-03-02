@@ -2,9 +2,6 @@
 
 require_once '../../initialise.php';
 
-$pageTitle = 'Add Employee';
-include ROOT_PATH . '/public/header.php';
-
 require_once ROOT_PATH . '/classes/Department.php';
 $department = new Department();
 
@@ -29,6 +26,10 @@ if ($department->connexionError) {
         }
     }
 }
+
+$pageTitle = 'Add Employee';
+include ROOT_PATH . '/public/header.php';
+include ROOT_PATH . '/public/nav.php';
 
 ?>
     <main>

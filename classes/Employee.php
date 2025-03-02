@@ -12,7 +12,7 @@ Class Employee extends Database
      * @return An associative array with employee information,
      *         or false if there was an error
      */
-    function getAll(): array|false
+    public function getAll(): array|false
     {
         $sql =<<<SQL
             SELECT nEmployeeID, cFirstName, cLastName, dBirth
@@ -26,7 +26,7 @@ Class Employee extends Database
             
             return $stmt->fetchAll();
         } catch (PDOException $e) {
-            Logger::logText('Error getting all employees: ', $e);
+            Logger::logText('Error retrieving all employees: ', $e);
             return false;
         }
     }
@@ -38,7 +38,7 @@ Class Employee extends Database
      * @return An associative array with employee information,
      *         or false if there was an error
      */
-    function search(string $searchText): array|false
+    public function search(string $searchText): array|false
     {
         $sql =<<<SQL
             SELECT nEmployeeID, cFirstName, cLastName, dBirth
@@ -67,7 +67,7 @@ Class Employee extends Database
      * @return An associative array with employee information,
      *         or false if there was an error
      */
-    function getByID(int $employeeID): array|false
+    public function getByID(int $employeeID): array|false
     {
         $sql =<<<SQL
             SELECT 
@@ -79,7 +79,7 @@ Class Employee extends Database
                 department.cName AS department_name
             FROM employee INNER JOIN department
                 ON employee.nDepartmentID = department.nDepartmentID
-            WHERE nEmployeeID = :employeeID;
+            WHERE employee.nEmployeeID = :employeeID;
         SQL;
 
         try {
@@ -95,11 +95,11 @@ Class Employee extends Database
     }
 
     /**
-     * It validates employee data before putting it into the database
+     * It validates employee data before saving it to the database
      * @param $employee Employee data in an associative array
      * @return<array> An array with all validation error messages
      */
-    function validate(array $employee): array
+    public function validate(array $employee): array
     {
         $firstName = trim($employee['first_name'] ?? '');
         $lastName = trim($employee['last_name'] ?? '');
@@ -145,7 +145,7 @@ Class Employee extends Database
      * @return true if the insert was successful,
      *         or false if there was an error
      */
-    function insert(array $employee): bool
+    public function insert(array $employee): bool
     {
         $sql =<<<SQL
             INSERT INTO employee
@@ -213,7 +213,7 @@ Class Employee extends Database
      * @return true if the deletion was successful,
      *         or false if there was an error
      */
-    function delete(int $employeeID): bool
+    public function delete(int $employeeID): bool
     {
         $sql =<<<SQL
             DELETE FROM employee
