@@ -9,7 +9,7 @@ if ($department->connexionError) {
     $errorMessage = 'There was an error while connecting to the database.';
 } else {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        require_once 'classes/Employee.php';
+        require_once ROOT_PATH . '/classes/Employee.php';
         
         $employee = new Employee();
         if ($employee->connexionError) {

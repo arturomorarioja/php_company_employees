@@ -45,7 +45,9 @@ include ROOT_PATH . '/public/nav.php';
                     </header>
                     <ul>
                         <?php foreach ($project as $employee): ?>
-                            <?php if ($employee['first_name'] !== null): ?>
+                            <?php if ($employee['first_name'] === null): ?>
+                                <p>No employees assigned to this project yet.</p>
+                            <?php else: ?>
                                 <li><?=$employee['last_name'] . ', ' . $employee['first_name'] . ' (' . $employee['department_name'] . ')' ?></li>
                             <?php endif; ?>
                         <?php endforeach; ?>

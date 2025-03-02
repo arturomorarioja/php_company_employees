@@ -77,11 +77,11 @@ Class Project extends Database
             FROM project
                 LEFT JOIN emp_proy
                     ON project.nProjectID = emp_proy.nProjectID
-                INNER JOIN employee
+                LEFT JOIN employee
                     ON emp_proy.nEmployeeID = employee.nEmployeeID 
-                INNER JOIN department
+                LEFT JOIN department
                     ON employee.nDepartmentID = department.nDepartmentID                
-            WHERE emp_proy.nProjectID = :projectID;
+            WHERE project.nProjectID = :projectID;
         SQL;
 
         try {
@@ -131,7 +131,7 @@ Class Project extends Database
 
         try {
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':firstName', $project['name']);
+            $stmt->bindValue(':name', $project['name']);
             $stmt->execute();
             
             return $stmt->rowCount() === 1;
