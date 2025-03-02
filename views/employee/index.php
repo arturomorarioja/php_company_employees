@@ -23,6 +23,7 @@ if ($employee->connexionError) {
 
 $pageTitle = 'Employees';
 include ROOT_PATH . '/public/header.php';
+include ROOT_PATH . '/public/nav.php';
 
 ?>
     <main>
