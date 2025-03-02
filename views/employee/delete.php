@@ -31,14 +31,11 @@ if ($employee->connexionError) {
 $pageTitle = 'Delete employee';
 include ROOT_PATH . '/public/header.php';
 include ROOT_PATH . '/public/nav.php';
+include ROOT_PATH . '/public/nav_back.php';
+
 
 ?>
 
-    <nav class="nav">
-        <ul>
-            <li><a href="index.php" title="Homepage">Back</a></li>
-        </ul>
-    </nav>
     <main>
         <section>
             <?php if ($errorMessage): ?>

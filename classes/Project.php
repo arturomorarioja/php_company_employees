@@ -176,19 +176,32 @@ Class Project extends Database
      *         or false if there was an error
      */
     public function delete(int $projectID): bool
-    {
+    {        
         $sql =<<<SQL
-            DELETE FROM project
+            DELETE FROM emp_proy
             WHERE nProjectID = :projectID;
         SQL;
         try {
+            $this->pdo->beginTransaction();
             
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':projectID', $projectID);
-            $stmt->execute();
+            $stmt->execute();                     
             
-            return $stmt->rowCount() === 1;
+            $sql =<<<SQL
+                DELETE FROM project
+                WHERE nProjectID = :projectID;
+            SQL;
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':projectID', $projectID);
+            $stmt->execute();
+            $success = $stmt->rowCount() === 1;
+
+            $this->pdo->commit();
+            return $success;
         } catch (PDOException $e) {
+            $this->pdo->rollBack();
+
             Logger::logText('Error deleting a project: ', $e);
             return false;
         }
