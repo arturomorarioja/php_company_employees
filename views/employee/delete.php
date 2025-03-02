@@ -1,9 +1,9 @@
 <?php
 
-
 $errorMessage = '';
 
-require_once 'classes/Employee.php';
+require_once '../../initialise.php';
+require_once ROOT_PATH . '/classes/Employee.php';
 $employee = new Employee();
 if ($employee->connexionError) {
     $errorMessage = 'There was an error while connecting to the database.';
@@ -29,7 +29,7 @@ if ($employee->connexionError) {
 }
 
 $pageTitle = 'Delete employee';
-include 'public/header.php';
+include ROOT_PATH . '/public/header.php';
 
 ?>
 
@@ -61,4 +61,4 @@ include 'public/header.php';
         </form>
     </main>
 
-<?php include 'public/footer.php'; ?>
+<?php include ROOT_PATH . '/public/footer.php'; ?>

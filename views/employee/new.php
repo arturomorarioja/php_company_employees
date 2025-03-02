@@ -1,9 +1,11 @@
 <?php
 
-$pageTitle = 'Add Employee';
-include 'public/header.php';
+require_once '../../initialise.php';
 
-require_once 'classes/Department.php';
+$pageTitle = 'Add Employee';
+include ROOT_PATH . '/public/header.php';
+
+require_once ROOT_PATH . '/classes/Department.php';
 $department = new Department();
 
 if ($department->connexionError) {
@@ -68,7 +70,7 @@ if ($department->connexionError) {
                 </div>
                 <div>
                     <?php
-                        require_once 'classes/department.php';
+                        require_once ROOT_PATH . '/classes/department.php';
 
                         $departments = $department->getAll();
                         if (!$departments):
@@ -93,4 +95,4 @@ if ($department->connexionError) {
             </form>
         <?php endif; ?>
     </main>
-<?php include 'public/footer.php'; ?>
+<?php include ROOT_PATH . '/public/footer.php'; ?>

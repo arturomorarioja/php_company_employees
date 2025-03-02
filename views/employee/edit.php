@@ -1,15 +1,15 @@
 <?php
 
-
 $errorMessage = '';
 
-require_once 'classes/Department.php';
+require_once '../../initialise.php';
+require_once ROOT_PATH . '/classes/Department.php';
 $department = new Department();
 
 if ($department->connexionError) {
     $errorMessage = 'There was an error while connecting to the database.';
 } else {   
-    require_once 'classes/Employee.php';
+    require_once ROOT_PATH . '/classes/Employee.php';
     $employee = new Employee();
     
     if ($employee->connexionError) {
@@ -48,7 +48,7 @@ if ($department->connexionError) {
 }
 
 $pageTitle = 'Edit Employee';
-include 'public/header.php';
+include ROOT_PATH . '/public/header.php';
 
 ?>
     <main>
@@ -114,4 +114,4 @@ include 'public/header.php';
             </form>
         <?php endif; ?>
     </main>
-<?php include 'public/footer.php'; ?>
+<?php include ROOT_PATH . '/public/footer.php'; ?>

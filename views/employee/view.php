@@ -1,8 +1,9 @@
 <?php
 
-require_once 'classes/Employee.php';
-
 $errorMessage = '';
+
+require_once '../../initialise.php';
+require_once ROOT_PATH . '/classes/Employee.php';
 
 $employee = new Employee();
 if ($employee->connexionError) {
@@ -22,7 +23,7 @@ if ($employee->connexionError) {
 }
 
 $pageTitle = 'Employee';
-include 'public/header.php';
+include ROOT_PATH . '/public/header.php';
 
 ?>
 
@@ -48,4 +49,4 @@ include 'public/header.php';
         </section>
     </main>
 
-<?php include 'public/footer.php'; ?>
+<?php include ROOT_PATH . '/public/footer.php'; ?>
