@@ -3,12 +3,16 @@
     --colorError: red;
 }
 
-nav {
+body > nav {
     ul {
         display: flex;
         flex-flow: row nowrap;
         gap: 1rem;
-        
+    }
+}
+nav {
+    ul {
+        margin: 0;
         padding: 0;
         li {
             list-style-type: none;
