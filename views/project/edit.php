@@ -1,10 +1,5 @@
 <?php
 
-// echo '<pre>';
-// print_r($_GET);
-// print_r($_POST);
-
-
 $errorMessage = '';
 
 require_once '../../initialise.php';
@@ -25,27 +20,33 @@ if ($employee->connexionError || $project->connexionError) {
         exit;
     }
 
+    // The list of employees will be displayed in the dropdown to add employees
     $employeeList = $employee->getAll();
     if (!$employeeList) {
         $errorMessage = 'There was an error while retrieving the list of employees.';
     } else {
-                
+        
+        // The project's name and list of assigned employees is retrieved for display
         $projectToUpdate = $project->getByID($projectID);
-        if (!$project) {
+        if (!$projectToUpdate) {
             $errorMessage = 'There was an error while retrieving project information.';
         } else {
 
-            // Employees assigned to the project are removed from the list of employees
+            $name = $projectToUpdate[0]['project_name'];
 
+            // Employees already assigned to the project are removed from the list of employees to add
             $assignedEmployees = array_column($projectToUpdate, 'employee_id');
             $employeeList = array_filter($employeeList, function ($employee) use ($assignedEmployees) {
                 return !in_array($employee['nEmployeeID'], $assignedEmployees);
             });
             $employeeList = array_values($employeeList);
 
-            
-            $name = $projectToUpdate[0]['project_name'];
-            
+            /**
+             * As there are 3 forms, there can be 3 types of POST requests:
+             * 1. Edit the name of the project ('update_project')
+             * 2. Add an employee to the project ('add_employee')
+             * 3. Remove an employee from the project ('remove_employee')
+             */            
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($_POST['update_project'])) {
                     $validationErrors = $project->validate($_POST);

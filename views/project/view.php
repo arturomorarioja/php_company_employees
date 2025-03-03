@@ -44,7 +44,14 @@ include ROOT_PATH . '/public/nav_back.php';
                             <?php if ($employee['first_name'] === null): ?>
                                 <p>No employees assigned to this project yet.</p>
                             <?php else: ?>
-                                <li><?=$employee['last_name'] . ', ' . $employee['first_name'] . ' (' . $employee['department_name'] . ')' ?></li>
+                                <li>
+                                    <a 
+                                        href="<?=BASE_URL . '/views/employee/view.php?id=' . 
+                                            $employee['employee_id'] ?>"><?=$employee['last_name'] . 
+                                            ', ' . $employee['first_name'] . ' (' . 
+                                            $employee['department_name'] . ')' ?>
+                                    </a>
+                                </li>
                             <?php endif; ?>
                         <?php endforeach; ?>
                     </ul>

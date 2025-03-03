@@ -99,6 +99,35 @@ Class Employee extends Database
     }
 
     /**
+     * It retrieves the list of projects an employee is assigned to
+     * @param $employeeID The ID of the employee
+     * @return An associative array with project information,
+     *         or false if there was an error
+     */
+    public function getProjects(int $employeeID): array|false
+    {
+        $sql =<<<SQL
+            SELECT 
+                project.nProjectID AS project_id, 
+                project.cName AS name
+            FROM project INNER JOIN emp_proy
+                ON project.nProjectID = emp_proy.nProjectID
+            WHERE emp_proy.nEmployeeID = :employeeID;
+        SQL;
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':employeeID', $employeeID);
+            $stmt->execute();
+            
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            Logger::logText('Error retrieving project information: ', $e);
+            return false;
+        }
+    }
+
+    /**
      * It validates employee data before saving it to the database
      * @param $employee Employee data in an associative array
      * @return<array> An array with all validation error messages
