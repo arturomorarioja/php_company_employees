@@ -66,6 +66,10 @@ article {
     flex-flow: row wrap;
     gap: 1rem;
 
+    p {
+        margin: 0;
+    }
+    
     img {
         width: 100%;
         max-width: var(--imgHomeWidth);

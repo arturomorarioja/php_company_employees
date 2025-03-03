@@ -48,8 +48,7 @@ include ROOT_PATH . '/public/nav_back.php';
                                     <a 
                                         href="<?=BASE_URL . '/views/employee/view.php?id=' . 
                                             $employee['employee_id'] ?>"><?=$employee['last_name'] . 
-                                            ', ' . $employee['first_name'] . ' (' . 
-                                            $employee['department_name'] . ')' ?>
+                                            ', ' . $employee['first_name'] ?>
                                     </a>
                                 </li>
                             <?php endif; ?>
