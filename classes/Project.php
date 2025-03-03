@@ -60,7 +60,7 @@ Class Project extends Database
     /**
      * It retrieves a project's names and employees
      * @param $projectID The ID of the project
-     * @return An associative array with employee information,
+     * @return<array> An associative array with employee information,
      *         or false if there was an error
      */
     public function getByID(int $projectID): array|false
@@ -68,6 +68,7 @@ Class Project extends Database
         $sql =<<<SQL
             SELECT 
                 project.cName AS project_name,
+                employee.nEmployeeID AS employee_id, 
                 employee.cFirstName AS first_name, 
                 employee.cLastName AS last_name, 
                 employee.cEmail AS email, 
@@ -145,26 +146,170 @@ Class Project extends Database
      * Updates a project in the database
      * @param $this->pdo A PDO database connection
      * @param $projectID The project's ID
-     * @param $project An associative array with project information
+     * @param $project An associative array with the name 
+     *      of the project and a list of project employees
      * @return true if the edition was successful,
      *         or false if there was an error
      */
     public function update(int $projectID, array $project): bool
     {
-        $sql =<<<SQL
-            UPDATE project
-            SET cName = :name
-            WHERE nProjectID = :projectID;
-        SQL;
         try {
+            $this->pdo->beginTransaction();
+
+            /**
+             * The project name is only updated if it has changed
+             */
+            $sql =<<<SQL
+                SELECT cName
+                FROM project
+                WHERE nProjectID = :projectID;
+            SQL;
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':name', $project['name']);
             $stmt->bindValue(':projectID', $projectID);
             $stmt->execute();
-            
+
+            if ($stmt->rowCount() !== 1) {
+                $this->pdo->rollBack();
+
+                Logger::logText('Error updating project name.');
+                return false;
+            }
+
+            if ($stmt->fetch()['cName'] !== $project['name']) {
+                $sql =<<<SQL
+                    UPDATE project
+                    SET cName = :name
+                    WHERE nProjectID = :projectID;
+                SQL;
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(':name', $project['name']);
+                $stmt->bindValue(':projectID', $projectID);
+                $stmt->execute();
+
+                if ($stmt->rowCount() !== 1) {
+                    $this->pdo->rollBack();
+    
+                    Logger::logText('Error updating project name.');
+                    return false;
+                }
+            }
+$this->pdo->commit();
+return true;
+
+            /**
+             * Employees leaving the project are deleted.
+             * New project employees are added.
+             * Rows for employees staying in the project are not updated.
+             */
+            $sql =<<<SQL
+                SELECT nEmployeeID
+                FROM emp_proy
+                WHERE nProjectID = :projectID;
+            SQL;
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':projectID', $projectID);
+            $stmt->execute();
+
+            $employees = array_column($stmt->fetchAll(), 'nEmployeeID');
+// echo '<pre>'            ;
+// print_r(array_column($employees, 'nEmployeeID'));
+// print_r($project['employees']);
+// exit;
+
+            // Removal of employees to the project
+            foreach ($employees as $employee) {
+                if (!in_array($employee['nEmployeeID'], $project['employees'])) {
+                    $sql =<<<SQL
+                        DELETE FROM emp_proy
+                        WHERE nProjectID = :projectID
+                          AND nEmployeeID = :employeeID;
+                    SQL;
+                    $stmt = $this->pdo->prepare($sql);
+                    $stmt->bindValue(':projectID', $projectID);
+                    $stmt->bindValue(':employeeID', $employee['nEmployeeID']);
+                    $stmt->execute();
+                }
+            }
+
+            // Addition of employees to the project
+            foreach ($project['employees'] as $newEmployee) {
+                if (!in_array($newEmployee, $employees)) {
+                    $sql =<<<SQL
+                        INSERT INTO emp_proy
+                            (nProjectID, nEmployeeID)
+                        VALUES
+                            (:projectID, :employeeID);
+                    SQL;
+                    $stmt = $this->pdo->prepare($sql);
+                    $stmt->bindValue(':projectID', $projectID);
+                    $stmt->bindValue(':employeeID', $newEmployee);
+                    $stmt->execute();
+                }
+            }
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+
+            Logger::logText('Error updating a project: ', $e);
+            return false;
+        }
+    }
+
+    /**
+     * Adds an employee to a project
+     * @param $projectID The ID of the project to add an employee to
+     * @param $employeeID The ID of the employee to add to the project
+     * @return true if the operation was successful,
+     *         false otherwise
+     */
+    public function addEmployee(int $projectID, int $employeeID): bool
+    {
+        $sql =<<<SQL
+            INSERT INTO emp_proy
+                (nProjectID, nEmployeeID)
+            VALUES
+                (:projectID, :employeeID);
+        SQL;        
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':projectID', $projectID);
+            $stmt->bindValue(':employeeID', $employeeID);
+            $stmt->execute();
+
             return $stmt->rowCount() === 1;
         } catch (PDOException $e) {
-            Logger::logText('Error updating a project: ', $e);
+            Logger::logText('Error adding an employee to a project: ', $e);
+            return false;
+        }
+    }
+
+    /**
+     * Removes an employee from a project
+     * @param $projectID The ID of the project to remove an employee from
+     * @param $employeeID The ID of the employee to remove from the project
+     * @return true if the operation was successful,
+     *         false otherwise
+     */
+    public function removeEmployee(int $projectID, int $employeeID): bool
+    {
+        $sql =<<<SQL
+            DELETE FROM emp_proy
+            WHERE nProjectID = :projectID
+              AND nEmployeeID = :employeeID;
+        SQL;        
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':projectID', $projectID);
+            $stmt->bindValue(':employeeID', $employeeID);
+            $stmt->execute();
+
+            return $stmt->rowCount() === 1;
+        } catch (PDOException $e) {
+            Logger::logText('Error removing an employee from a project: ', $e);
             return false;
         }
     }
@@ -183,7 +328,7 @@ Class Project extends Database
         SQL;
         try {
             $this->pdo->beginTransaction();
-            
+
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(':projectID', $projectID);
             $stmt->execute();                     

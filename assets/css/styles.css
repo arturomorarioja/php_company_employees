@@ -18,10 +18,10 @@ nav {
     ul {
         margin: 0;
         padding: 0;
-        li {
-            list-style-type: none;
-        }
     }
+}
+li {
+    list-style-type: none;
 }
 
 article {
@@ -84,6 +84,6 @@ article {
     }
 }
 
-#employees h2 {
+.employees h2 {
     font-size: 1rem;
 }

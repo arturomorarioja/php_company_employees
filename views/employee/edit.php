@@ -37,7 +37,7 @@ if ($department->connexionError) {
                 
                 if (!$validationErrors) {
                     if (!$employee->update($employeeID, $_POST)) {
-                        $errorMessage = 'It was not possible to add the new employee.';
+                        $errorMessage = 'It was not possible to edit the employee.';
                     } else {
                         header('Location: index.php');
                     }

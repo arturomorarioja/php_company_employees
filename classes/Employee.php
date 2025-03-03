@@ -9,15 +9,19 @@ Class Employee extends Database
 
     /**
      * It retrieves all employees from the database
-     * @return An associative array with employee information,
+     * @return<array> An associative array with employee information,
      *         or false if there was an error
      */
     public function getAll(): array|false
     {
         $sql =<<<SQL
-            SELECT nEmployeeID, cFirstName, cLastName, dBirth
-            FROM employee
-            ORDER BY cFirstName, cLastName;
+            SELECT 
+                employee.nEmployeeID, employee.cFirstName, 
+                employee.cLastName, employee.dBirth,
+                department.nDepartmentID, department.cName
+            FROM employee INNER JOIN department
+                ON employee.nDepartmentID = department.nDepartmentID
+            ORDER BY employee.cLastName, employee.cFirstName;
         SQL;
 
         try {
