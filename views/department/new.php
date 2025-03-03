@@ -3,16 +3,16 @@
 require_once '../../initialise.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once ROOT_PATH . '/classes/Project.php';
+    require_once ROOT_PATH . '/classes/Department.php';
     
-    $project = new Project();
-    if ($project->connexionError) {
+    $department = new Department();
+    if ($department->connexionError) {
         $errorMessage = 'There was an error while connecting to the database.';
     } else {
-        $validationErrors = $project->validate($_POST);    
+        $validationErrors = $department->validate($_POST);    
         if (!$validationErrors) {
-            if (!$project->insert($_POST)) {
-                $errorMessage = 'It was not possible to add the new project.';
+            if (!$department->insert($_POST)) {
+                $errorMessage = 'It was not possible to add the new department.';
             } else {
                 header('Location: index.php');
             }
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Add Project';
+$pageTitle = 'Add Department';
 include ROOT_PATH . '/public/header.php';
 include ROOT_PATH . '/public/nav.php';
 include ROOT_PATH . '/public/nav_back.php';
@@ -44,7 +44,7 @@ include ROOT_PATH . '/public/nav_back.php';
                         value="<?=$_POST['name'] ?? '' ?>">
                 </div>
                 <div>
-                    <button type="submit">Add project</button>
+                    <button type="submit">Add department</button>
                 </div>
             </form>
         <?php endif; ?>

@@ -17,7 +17,8 @@ if ($employee->connexionError) {
     }
 
     $projects = $employee->getProjects($employeeID);
-    if (!$projects) {
+    // An empty array evaluates to false, so the return type must be explicitly checked
+    if (!$projects && gettype($projects) === 'bool') {  
         $errorMessage = 'There was an error while retrieving project information.';
     }
 
@@ -46,20 +47,24 @@ include ROOT_PATH . '/public/nav_back.php';
                 <p><strong>Last name: </strong><?=htmlspecialchars($employee['last_name']) ?></p>
                 <p><strong>Email address: </strong><a href="mailto:<?=$email ?>"><?=$email ?></a></p>
                 <p><strong>Birth date: </strong><?=htmlspecialchars($employee['birth_date']) ?></p>
-                <p><strong>Department: </strong><?=htmlspecialchars($employee['department_name']) ?></p>
+                <p><strong>Department: </strong><a href="<?=BASE_URL . '/views/department/view.php?id=' . $employee['department_id'] ?>"><?=htmlspecialchars($employee['department_name']) ?></a></p>
                 <section class="employees">
                     <header>
                         <h2>Projects</h2>
                     </header>
-                    <ul>
-                        <?php foreach ($projects as $project): ?>
-                            <li>
-                                <a href="<?=BASE_URL . 
-                                    '/views/project/view.php?id=' . 
-                                    $project['project_id'] ?>"><?=$project['name'] ?></a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                    <?php if ($projects): ?>
+                        <ul>
+                            <?php foreach ($projects as $project): ?>
+                                <li>
+                                    <a href="<?=BASE_URL . 
+                                        '/views/project/view.php?id=' . 
+                                        $project['project_id'] ?>"><?=$project['name'] ?></a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <p>This employee is not assigned to any project.</p>
+                    <?php endif; ?>
                 </section>
             <?php endif; ?>
         </section>

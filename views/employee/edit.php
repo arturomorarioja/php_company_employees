@@ -23,7 +23,7 @@ if ($department->connexionError) {
         }
         
         $employeeToUpdate = $employee->getByID($employeeID);
-        if (!$employee) {
+        if (!$employeeToUpdate) {
             $errorMessage = 'There was an error while retrieving employee information';
         } else {
             $firstName = $employeeToUpdate['first_name'];

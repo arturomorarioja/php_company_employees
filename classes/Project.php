@@ -30,7 +30,7 @@ Class Project extends Database
     }
 
     /**
-     * It retrieves employees from the database based 
+     * It retrieves projects from the database based 
      * on a name text search
      * @param $searchText The text to search in the database
      * @return An associative array with project information,
@@ -99,7 +99,7 @@ Class Project extends Database
 
     /**
      * It validates project data before saving it to the database
-     * @param $employee Project data in an associative array
+     * @param $project Project data in an associative array
      * @return<array> An array with all validation error messages
      */
     public function validate(array $project): array
@@ -144,10 +144,8 @@ Class Project extends Database
 
     /**
      * Updates a project in the database
-     * @param $this->pdo A PDO database connection
      * @param $projectID The project's ID
-     * @param $project An associative array with the name 
-     *      of the project and a list of project employees
+     * @param $project An associative array with the name of the project
      * @return true if the edition was successful,
      *         or false if there was an error
      */
@@ -193,60 +191,6 @@ Class Project extends Database
                     return false;
                 }
             }
-$this->pdo->commit();
-return true;
-
-            /**
-             * Employees leaving the project are deleted.
-             * New project employees are added.
-             * Rows for employees staying in the project are not updated.
-             */
-            $sql =<<<SQL
-                SELECT nEmployeeID
-                FROM emp_proy
-                WHERE nProjectID = :projectID;
-            SQL;
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(':projectID', $projectID);
-            $stmt->execute();
-
-            $employees = array_column($stmt->fetchAll(), 'nEmployeeID');
-// echo '<pre>'            ;
-// print_r(array_column($employees, 'nEmployeeID'));
-// print_r($project['employees']);
-// exit;
-
-            // Removal of employees to the project
-            foreach ($employees as $employee) {
-                if (!in_array($employee['nEmployeeID'], $project['employees'])) {
-                    $sql =<<<SQL
-                        DELETE FROM emp_proy
-                        WHERE nProjectID = :projectID
-                          AND nEmployeeID = :employeeID;
-                    SQL;
-                    $stmt = $this->pdo->prepare($sql);
-                    $stmt->bindValue(':projectID', $projectID);
-                    $stmt->bindValue(':employeeID', $employee['nEmployeeID']);
-                    $stmt->execute();
-                }
-            }
-
-            // Addition of employees to the project
-            foreach ($project['employees'] as $newEmployee) {
-                if (!in_array($newEmployee, $employees)) {
-                    $sql =<<<SQL
-                        INSERT INTO emp_proy
-                            (nProjectID, nEmployeeID)
-                        VALUES
-                            (:projectID, :employeeID);
-                    SQL;
-                    $stmt = $this->pdo->prepare($sql);
-                    $stmt->bindValue(':projectID', $projectID);
-                    $stmt->bindValue(':employeeID', $newEmployee);
-                    $stmt->execute();
-                }
-            }
-
             $this->pdo->commit();
             return true;
         } catch (PDOException $e) {
