@@ -23,4 +23,6 @@ $baseUrl = str_replace($documentRoot, '', ROOT_PATH);
 
 // As it is an absolute path, it must start with a slash.
 // If it already starts with a slash, ltrim removes it before it gets added again
-define('BASE_URL', '/' . ltrim($baseUrl, '/'));
+// Because it will be concatenated with relative paths beginning with a slash,
+//  if there is a slash at the end it will also be deleted as a last step
+define('BASE_URL', rtrim('/' . ltrim($baseUrl, '/'), '/'));
