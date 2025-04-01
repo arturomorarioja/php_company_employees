@@ -6,6 +6,9 @@
     --imgHomeHeight: 320px;
 }
 
+body > header {
+    border-bottom: thin solid var(--colorMain);
+}
 body > nav {
     ul {
         display: flex;
